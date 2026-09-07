@@ -37,41 +37,6 @@ export const helpBackButton = {
     },
 };
 
-export const helpBugReportButton = {
-    name: BUG_REPORT_BUTTON_ID,
-    async execute(interaction, client) {
-        const githubButton = new ButtonBuilder()
-            .setLabel('🐛 Report Bug on GitHub')
-            .setStyle(ButtonStyle.Link)
-            .setURL('https://github.com/codebymitch/TitanBot/issues');
-
-        const bugRow = new ActionRowBuilder().addComponents(githubButton);
-
-        const bugReportEmbed = createEmbed({
-            title: '🐛 Bug Report',
-            description: 'Found a bug? Please report it on our GitHub Issues page!\n\n' +
-                '**When reporting a bug, please include:**\n' +
-                '• 📝 Detailed description of the issue\n' +
-                '• 📋 Steps to reproduce the problem\n' +
-                '• 📸 Screenshots if applicable\n' +
-                '• 💻 Your bot version and environment\n\n' +
-                'This helps us fix issues faster and more effectively!',
-            color: 'error'
-        });
-        bugReportEmbed.setFooter({
-            text: 'TitanBot Bug Reporting System',
-            iconURL: client.user.displayAvatarURL()
-        });
-        bugReportEmbed.setTimestamp();
-
-        await interaction.reply({
-            embeds: [bugReportEmbed],
-            components: [bugRow],
-            flags: MessageFlags.Ephemeral
-        });
-    },
-};
-
 function getPaginationInfo(components) {
     for (const row of components || []) {
         for (const component of row.components || []) {
