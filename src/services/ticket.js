@@ -53,9 +53,9 @@ function buildTicketControlRow({ claimedBy = null } = {}) {
   return new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId('ticket_claim')
-      .setLabel(claimedBy ? 'Claimed' : 'Claim')
+      .setLabel(claimedBy ? 'تم استلام التكت' : 'استلام التكت')
       .setStyle(claimedBy ? ButtonStyle.Secondary : ButtonStyle.Primary)
-      .setEmoji('🙋')
+      .setEmoji('<a:FL_on:1545290769454342217>')
       .setDisabled(!!claimedBy),
     new ButtonBuilder()
       .setCustomId('ticket_pin')
@@ -64,9 +64,9 @@ function buildTicketControlRow({ claimedBy = null } = {}) {
       .setEmoji('📌'),
     new ButtonBuilder()
       .setCustomId('ticket_close')
-      .setLabel('Close')
+      .setLabel('إغلاق التكت')
       .setStyle(ButtonStyle.Danger)
-      .setEmoji('🔒'),
+      .setEmoji('<a:FL_off:1545290772310401066>'),
   );
 }
 
@@ -283,10 +283,10 @@ export async function closeTicket(channel, closer, reason = 'No reason provided'
 
           try {
             const feedbackEmbed = createEmbed({
-              title: '⭐ How was your support experience?',
-              description: `We'd love to know how we did with **${channel.name}**.\nSelect a rating below — it only takes a second!`,
+              title: '⭐ ما هو رأيك مع الادارة الخاصة بنا؟?',
+              description: `نحب ان تشارك رأيك معنا في  **${channel.name}**.\nSelect a rating below — it only takes a second!`,
               color: '#F1C40F',
-              footer: { text: 'Your feedback helps us improve.' },
+              footer: { text: '.رأيك يهمنا بجدية' },
             });
 
             const base = `ticket_feedback:${channel.guild.id}:${channel.id}`;
@@ -300,11 +300,11 @@ export async function closeTicket(channel, closer, reason = 'No reason provided'
             const declineRow = new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId(`ticket_feedback_comment:${channel.guild.id}:${channel.id}`)
-                .setLabel('✍️ Add Comment')
+                .setLabel('✍️ اضافة تعليق')
                 .setStyle(ButtonStyle.Secondary),
               new ButtonBuilder()
                 .setCustomId(`ticket_feedback_decline:${channel.guild.id}:${channel.id}`)
-                .setLabel('❌ No thanks')
+                .setLabel('❌ لا شكرا')
                 .setStyle(ButtonStyle.Secondary),
             );
 
@@ -381,14 +381,14 @@ components: []
     const controlRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('ticket_reopen')
-        .setLabel('Reopen Ticket')
+        .setLabel('اعادة فتح التكت')
         .setStyle(ButtonStyle.Success)
-        .setEmoji('🔓'),
+        .setEmoji('<:padlock:1545290871182991400>'),
       new ButtonBuilder()
         .setCustomId('ticket_delete')
-        .setLabel('Delete Ticket')
+        .setLabel('حذف التكت')
         .setStyle(ButtonStyle.Danger)
-        .setEmoji('🗑️')
+        .setEmoji('<a:FL_off:1545290772310401066>')
     );
     
     await channel.send({ embeds: [closeEmbed], components: [controlRow] });
@@ -467,9 +467,9 @@ export async function claimTicket(channel, claimer) {
     const unclaimRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId('ticket_unclaim')
-        .setLabel('Unclaim')
+        .setLabel('الغاء الإستلام')
         .setStyle(ButtonStyle.Secondary)
-        .setEmoji('🔓')
+        .setEmoji('<:padlock:1545290871182991400>')
     );
 
     const claimStatusMessage = messages.find(m =>
