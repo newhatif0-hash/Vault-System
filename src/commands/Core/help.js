@@ -113,12 +113,6 @@ export async function createInitialHelpMenu(client) {
     embed.setTimestamp();
     
 
-    const bugReportButton = new ButtonBuilder()
-        .setCustomId(BUG_REPORT_BUTTON_ID)
-        .setLabel("Report Bug")
-        .setStyle(ButtonStyle.Danger);
-
-    
     const supportButton = new ButtonBuilder()
         .setLabel("Support Server")
         .setURL("https://discord.gg/xjPduJkAhX")
