@@ -54,16 +54,6 @@ export default {
     interaction.traceId = interactionTraceContext.traceId;
 
     return runWithTraceContext(interactionTraceContext, async () => {
-      const command = client.commands.get(interaction.commandName);
-
-if (!command) {
-  throw createError(
-    `No command matching ${interaction.commandName} was found.`,
-    ErrorTypes.CONFIGURATION,
-    'Sorry, that command does not exist.',
-    withTraceContext({ commandName: interaction.commandName }, interactionTraceContext)
-  );
-}
       try {
         InteractionHelper.patchInteractionResponses(interaction);
         ResponseCoordinator.attach(interaction);
@@ -83,7 +73,18 @@ if (!command) {
               commandName: interaction.commandName
             }, interactionTraceContext));
 
-            const command = client.commands.get(interaction.commandName);
+            let command = client.commands.get(interaction.commandName);
+
+            // If not found, check shortcuts
+if (!command) {
+  for (const cmd of client.commands.values()) {
+    if (cmd.shortcuts && cmd.shortcuts.includes(interaction.commandName)) {
+      command = cmd;
+      break;
+    }
+  }
+}
+            
 
             if (!command) {
               throw createError(
