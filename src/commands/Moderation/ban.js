@@ -1,23 +1,30 @@
 export default {
     name: 'ban',
     description: 'Ban a user from the server',
-    aliases: ['كسرة', 'بنعالي'], // ← Add this line with your shortcuts
-    
+    shortcuts: ['كسرة', 'بنعالي'], // ← Your Arabic shortcuts
+
     async execute(message, args) {
-        // Your existing ban command code here
-        // Example:
-        const user = message.mentions.users.first();
-        const reason = args.slice(1).join(' ') || 'No reason provided';
-        
-        if (!user) {
-            return message.reply('Please mention a user to ban');
+        // Check if user has permission
+        if (!message.member.permissions.has('BanMembers')) {
+            return message.reply('❌ You do not have permission to ban members.');
         }
-        
+
+        // Get the mentioned user
+        const user = message.mentions.users.first();
+        if (!user) {
+            return message.reply('❌ Please mention a user to ban. Usage: `!ban @user [reason]`');
+        }
+
+        // Get ban reason (everything after the mentioned user)
+        const reason = args.slice(1).join(' ') || 'No reason provided';
+
         try {
             await message.guild.members.ban(user, { reason });
-            message.reply(`✓ ${user.tag} has been banned. Reason: ${reason}`);
+            message.reply(`✅ **${user.tag}** has been banned.\n**Reason:** ${reason}`);
+            console.log(`[BAN] ${user.tag} was banned by ${message.author.tag}. Reason: ${reason}`);
         } catch (error) {
-            message.reply(`✗ Failed to ban: ${error.message}`);
+            message.reply(`❌ Failed to ban: ${error.message}`);
+            console.error('Ban error:', error);
         }
     }
 };
