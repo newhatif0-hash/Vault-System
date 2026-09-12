@@ -1,152 +1,82 @@
 /**
- * Command Aliases Configuration
- * Maps shortened command names to their full command names
+ * تكوين اختصارات الأوامر
+ * يربط أسماء الأوامر المختصرة بأسماء الأوامر الكاملة
  */
 
 export const commandAliases = {
-    'bal': 'balance',
-    'money': 'balance',
-    'cash': 'balance',
+    // الرصيد والمال
+    'رصيد': 'balance',
+    'فلوس': 'balance',
+    'مصاري': 'balance',
 
-    'dep': 'deposit',
-    'with': 'withdraw',
-    'work': 'work',
-    'daily': 'daily',
-    'gamble': 'gamble',
-    'bet': 'gamble',
-    'rob': 'rob',
-    'crime': 'crime',
-    'pay': 'pay',
-    'give': 'pay',
-    'send': 'pay',
+    // المعاملات المالية
+    'ودع': 'deposit',
+    'شيل': 'withdraw',
+    'شتغل': 'work',
+    'يومي': 'daily',
+    'قمار': 'gamble',
+    'رهن': 'gamble',
+    'سرقة': 'rob',
+    'جريمة': 'crime',
+    'حول': 'pay',
+    'عطي': 'pay',
+    'بعت': 'pay',
 
-    'ping': 'ping',
-    'help': 'help',
-    'h': 'help',
-    'info': 'help',
+    // معلومات عامة
+    'بينج': 'ping',
+    'مساعدة': 'help',
+    'ح': 'help',
+    'معلومات': 'help',
 
-    'ban': 'ban',
-    'kick': 'kick',
-    'mute': 'timeout',
-    'warn': 'warn',
-    'clear': 'purge',
-    'purge': 'purge',
-    'untimeout': 'untimeout',
-    'unmute': 'untimeout',
+    // أوامر التعديل
+    'كسرة': 'ban',
+    'بنعالي': 'ban',
+    'برا': 'kick',
+    'اطرد': 'kick',
+    'اسكت': 'timeout',
+    'سكوت': 'timeout',
+    'تحذير': 'warn',
+    'نبه': 'warn',
+    'مسح': 'purge',
+    'م': 'purge',
+    'نضف': 'purge',
+    'تكلم': 'untimeout',
+    'فك_الصمت': 'untimeout',
+    'شيل_الصمت': 'untimeout',
 
-    'rank': 'rank',
-    'lvl': 'rank',
-    'xp': 'rank',
-    'leaderboard': 'leaderboard',
-    'lb': 'leaderboard',
-    'top': 'leaderboard',
+    // النظام والترتيب
+    'مستوى': 'rank',
+    'درجة': 'rank',
+    'خبرة': 'rank',
+    'لائحة': 'leaderboard',
+    'ترتيب': 'leaderboard',
+    'أفضل': 'leaderboard',
+    'أول': 'leaderboard',
 
-    'shop': 'shop',
-    'buy': 'buy',
-    'inventory': 'inventory',
-    'inv': 'inventory',
-    'items': 'inventory',
+    // المتجر والمخزون
+    'محل': 'shop',
+    'شري': 'buy',
+    'خزنة': 'inventory',
+    'حاجياتي': 'inventory',
+    'أشيائي': 'inventory',
 
-    'user': 'userinfo',
-    'avatar': 'avatar',
-    'pfp': 'avatar',
-    'icon': 'avatar',
+    // معلومات المستخدم
+    'بروفايل': 'userinfo',
+    'صورة': 'avatar',
+    'صورتي': 'avatar',
+    'أيقونة': 'avatar',
 
-    'bd': 'birthday',
-    'bday': 'birthday',
-    'b': 'birthday',
+    // أعياد الميلاد
+    'ميلادي': 'birthday',
+    'عيد': 'birthday',
+    'ي': 'birthday',
 
-    'flip': 'flip',
-    'coin': 'flip',
-    'roll': 'roll',
-    'dice': 'roll',
-    'fight': 'fight',
-
-    'gcreate': 'gcreate',
-    'gstart': 'gcreate',
-    'gend': 'gend',
-    'gstop': 'gend',
-    'gdelete': 'gdelete',
-    'greroll': 'greroll',
-    'groll': 'greroll',
-
-    'ticket': 'ticket',
-    't': 'ticket',
-    'new': 'ticket',
-
-    'ver': 'verify',
-    'vadmin': 'verification',
-    'av': 'autoverify',
-
-    'welcome': 'welcome',
-    'greet': 'greet',
-    'goodbye': 'goodbye',
-    'autorole': 'autorole',
-
-    'calc': 'calculate',
-    'math': 'calculate',
-    'weather': 'weather',
-    'todo': 'todo',
-    'report': 'report',
-    'userinfo': 'userinfo',
-    'whois': 'userinfo',
-    'ui': 'userinfo',
-
-    'serverstats': 'serverstats',
-    'ss': 'serverstats',
-    'sstats': 'serverstats',
-
-    'rr': 'reactroles',
-    'reactionroles': 'reactroles',
-
-    'jtc': 'jointocreate',
-    'jointocreate': 'jointocreate',
-
-    'np': 'nowplaying',
-    'now': 'nowplaying',
+    // ألعاب
+    'رمية': 'flip',
+    'عملة': 'flip',
+    'رمي': 'roll',
 };
 
-export const subcommandAliases = {
-    'l': 'list',
-    'ls': 'list',
-    's': 'set',
-    'i': 'info',
-    'r': 'remove',
-    'rm': 'remove',
-    'del': 'remove',
-    'n': 'next',
-    'sc': 'setchannel',
-
-    'a': 'add',
-    'c': 'complete',
-    'done': 'complete',
-    'd': 'complete',
-
-    'start': 'create',
-    'stop': 'end',
-    'roll': 'reroll',
-
-    'add': 'add',
-    'remove': 'remove',
-    'list': 'list',
-};
-
-/**
- * Resolve a command alias to its full command name
- * @param {string} commandName - The command name (could be an alias)
- * @returns {string} - The full command name, or the original if not an alias
- */
 export function resolveCommandAlias(commandName) {
-    const normalized = commandName.toLowerCase();
-    return commandAliases[normalized] || commandName;
-}
-
-/**
- * Resolve a subcommand alias to its full subcommand name
- * @param {string} subcommandName - The subcommand name (could be an alias)
- * @returns {string} - The full subcommand name, or the original if not an alias
- */
-export function resolveSubcommandAlias(subcommandName) {
-    const normalized = subcommandName.toLowerCase();
-    return subcommandAliases[normalized] || subcommandName;
-}
+    return commandAliases[commandName] || commandName;
+    }
