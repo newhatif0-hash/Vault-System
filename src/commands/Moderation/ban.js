@@ -19,6 +19,7 @@ export default {
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
     category: "moderation",
+    shortcuts: ["كسرة", "بنعالي"],
 
     async execute(interaction, config, client) {
         const user = interaction.options.getUser("target");
