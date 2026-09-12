@@ -22,9 +22,18 @@ export async function loadCommands(client) {
                 try {
                     const command = (await import(`file://${filePath}`)).default;
 
-                    if (command.data && command.data.name) {
-                        client.commands.set(command.data.name, command);
-                        logger.info(`✓ Loaded command: ${command.data.name}`);
+                    if (command.name) {
+                        // Register main command
+                        client.commands.set(command.name, command);
+                        logger.info(`✓ Loaded command: ${command.name}`);
+
+                        // Register shortcuts if they exist
+                        if (command.shortcuts && Array.isArray(command.shortcuts)) {
+                            for (const shortcut of command.shortcuts) {
+                                client.commands.set(shortcut, command);
+                                logger.info(`✓ Registered shortcut: ${shortcut} → ${command.name}`);
+                            }
+                        }
                     }
                 } catch (error) {
                     logger.error(`Failed to load command from ${filePath}:`, error);
@@ -34,67 +43,5 @@ export async function loadCommands(client) {
     }
 
     await loadCommandsRecursive(commandsPath);
-    logger.info(`✓ Loaded ${client.commands.size} commands`);
-}
-
-export function registerCommands(client) {
-    const commands = [];
-    let totalSubcommands = 0;
-    const registeredNames = new Set();
-
-    for (const command of client.commands.values()) {
-        const commandName = command.data.name;
-
-        if (registeredNames.has(commandName)) {
-            logger.warn(`Duplicate command name: ${commandName}`);
-            continue;
-        }
-
-        registeredNames.add(commandName);
-        const commandJson = command.data.toJSON();
-        commands.push(commandJson);
-        totalSubcommands += getSubcommandInfo(commandJson).length;
-
-        // Register shortcuts as separate commands
-        if (command.shortcuts && Array.isArray(command.shortcuts)) {
-            for (const shortcut of command.shortcuts) {
-                if (!registeredNames.has(shortcut)) {
-                    registeredNames.add(shortcut);
-                    const shortcutJson = {
-                        ...commandJson,
-                        name: shortcut,
-                    };
-                    commands.push(shortcutJson);
-                    logger.debug(`Registering shortcut: ${shortcut} -> ${commandName}`);
-                } else {
-                    logger.warn(`Shortcut name already registered: ${shortcut}`);
-                }
-            }
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            logger.debug(`Registering command: ${commandName}`);
-        }
-    }
-
-    logger.info(`Collected ${commands.length} command payloads (${totalSubcommands} subcommands)`);
-    return { commands, totalSubcommands };
-}
-
-function getSubcommandInfo(commandJson) {
-    const subcommands = [];
-
-    if (commandJson.options && Array.isArray(commandJson.options)) {
-        for (const option of commandJson.options) {
-            if (option.type === 1 || option.type === 2) {
-                // Subcommand or SubcommandGroup
-                subcommands.push({
-                    name: option.name,
-                    type: option.type === 1 ? 'Subcommand' : 'SubcommandGroup',
-                });
-            }
-        }
-    }
-
-    return subcommands;
+    logger.info(`✓ Loaded ${client.commands.size} commands and shortcuts total`);
 }
