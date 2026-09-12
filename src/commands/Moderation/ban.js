@@ -1,9 +1,13 @@
 export default {
-    name: 'ban',
-    description: 'Ban a user from the server',
-    shortcuts: ['كسرة', 'بنعالي'], // ← Your Arabic shortcuts
+    data: {
+        name: 'ban',
+        description: 'Ban a user from the server',
+    },
+    category: 'Moderation',
+    aliases: ['كسرة', 'بنعالي'], // ← Your shortcuts
+    supportPrefix: true, // ← Enable prefix command support
 
-    async execute(message, args) {
+    async executePrefixCommand(message, args) {
         // Check if user has permission
         if (!message.member.permissions.has('BanMembers')) {
             return message.reply('❌ You do not have permission to ban members.');
