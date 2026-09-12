@@ -54,6 +54,16 @@ export default {
     interaction.traceId = interactionTraceContext.traceId;
 
     return runWithTraceContext(interactionTraceContext, async () => {
+      const command = client.commands.get(interaction.commandName);
+
+if (!command) {
+  throw createError(
+    `No command matching ${interaction.commandName} was found.`,
+    ErrorTypes.CONFIGURATION,
+    'Sorry, that command does not exist.',
+    withTraceContext({ commandName: interaction.commandName }, interactionTraceContext)
+  );
+}
       try {
         InteractionHelper.patchInteractionResponses(interaction);
         ResponseCoordinator.attach(interaction);
