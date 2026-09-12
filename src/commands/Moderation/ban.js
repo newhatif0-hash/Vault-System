@@ -1,9 +1,13 @@
 import { successEmbed } from '../../utils/embeds.js';
-import { InteractionHelper } from '../../utils/interactionHelper.js';
 import { ModerationService } from '../../services/moderation/moderationService.js';
 import { TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
 
 export default {
+    data: {
+        name: "ban",
+        description: "Ban a user from the server",
+        type: "message", // message command, not slash command
+    },
     shortcuts: ["كسرة", "بنعالي"],
     allowedRoles: ["1548206311244562505", "1548206279229448213"],
     category: "moderation",
