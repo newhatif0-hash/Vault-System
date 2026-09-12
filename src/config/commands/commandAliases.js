@@ -3,7 +3,7 @@
  * يربط أسماء الأوامر المختصرة بأسماء الأوامر الكاملة
  */
 
-export const commandAliases = {
+export default {
     // الرصيد والمال
     'رصيد': 'balance',
     'فلوس': 'balance',
@@ -79,4 +79,4 @@ export const commandAliases = {
 
 export function resolveCommandAlias(commandName) {
     return commandAliases[commandName] || commandName;
-    }
+}
