@@ -1,21 +1,31 @@
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { successEmbed } from '../../utils/embeds.js';
+import { InteractionHelper } from '../../utils/interactionHelper.js';
 import { ModerationService } from '../../services/moderation/moderationService.js';
 import { TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
 
 export default {
-    data: {
-        name: "ban",
-        description: "Ban a user from the server",
-        type: "message", // message command, not slash command
-    },
+    data: new SlashCommandBuilder()
+        .setName("ban")
+        .setDescription("Ban a user from the server")
+        .addUserOption((option) =>
+            option
+                .setName("target")
+                .setDescription("The user to ban")
+                .setRequired(true),
+        )
+        .addStringOption((option) =>
+            option.setName("reason").setDescription("Reason for the ban"),
+        )
+        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+    category: "moderation",
     shortcuts: ["كسرة", "بنعالي"],
     allowedRoles: ["1548206311244562505", "1548206279229448213"],
-    category: "moderation",
 
-    async execute(message, args, client) {
+    async execute(interaction, config, client) {
         // Check if user has one of the allowed roles
         const hasPermission = this.allowedRoles.some(roleId => 
-            message.member.roles.cache.has(roleId)
+            interaction.member.roles.cache.has(roleId)
         );
 
         if (!hasPermission) {
@@ -26,26 +36,25 @@ export default {
             );
         }
 
-        const user = message.mentions.users.first();
-        const reason = args.slice(1).join(" ") || "No reason provided";
+        const user = interaction.options.getUser("target");
+        const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!user) {
             throw new TitanBotError(
                 'Missing target user',
                 ErrorTypes.USER_INPUT,
-                'You must mention a user to ban.',
+                'You must specify a user to ban.',
                 { subtype: 'invalid_user' },
             );
         }
 
-        if (user.id === message.author.id) {
+        if (user.id === interaction.user.id) {
             throw new TitanBotError(
                 'Cannot ban self',
                 ErrorTypes.VALIDATION,
                 'You cannot ban yourself.',
             );
         }
-
         if (user.id === client.user.id) {
             throw new TitanBotError(
                 'Cannot ban bot',
@@ -55,13 +64,13 @@ export default {
         }
 
         const result = await ModerationService.banUser({
-            guild: message.guild,
+            guild: interaction.guild,
             user,
-            moderator: message.member,
+            moderator: interaction.member,
             reason,
         });
 
-        await message.reply({
+        await InteractionHelper.universalReply(interaction, {
             embeds: [
                 successEmbed(
                     `🚫 **Banned** ${user.tag}`,
