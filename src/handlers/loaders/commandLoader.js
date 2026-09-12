@@ -38,7 +38,7 @@ export async function loadCommands(client) {
           client.commands.set(commandName, command);
           console.log(`✅ Loaded command: ${commandName}`);
 
-          // Register aliases
+          // Register aliases for prefix commands
           const aliases = commandAliases[commandName] || [];
           if (Array.isArray(aliases)) {
             for (const alias of aliases) {
@@ -59,11 +59,46 @@ export async function loadCommands(client) {
 }
 
 /**
- * Register all commands (wrapper function for clarity)
+ * Register slash commands for Discord API
+ * Filters commands with supportSlash: true and builds SlashCommandBuilder data
  * @param {Client} client - Discord.js client
+ * @returns {Object} { commands: Array, totalSubcommands: number }
  */
-export async function registerCommands(client) {
-  console.log('🔄 Starting command registration...');
-  await loadCommands(client);
-  console.log('✅ Command registration complete!');
+export function registerCommands(client) {
+  const commands = [];
+  let totalSubcommands = 0;
+
+  for (const [, command] of client.commands) {
+    // Only include each command once (skip aliases)
+    if (!command.data || !command.data.name) continue;
+    
+    // Check if this is the main command (not an alias)
+    if (client.commands.get(command.data.name) !== command) continue;
+
+    // Only register slash commands if supportSlash is true
+    if (command.supportSlash === false) {
+      console.log(`⏭️  Skipping slash registration for ${command.data.name} (prefix-only)`);
+      continue;
+    }
+
+    try {
+      // Build the slash command JSON
+      const commandJson = command.data.toJSON ? command.data.toJSON() : command.data;
+      commands.push(commandJson);
+
+      // Count subcommands if they exist
+      if (command.data.options) {
+        const subcommands = command.data.options.filter(
+          opt => opt.type === 1 || opt.type === 2 // SUBCOMMAND or SUBCOMMAND_GROUP
+        );
+        totalSubcommands += subcommands.length;
+      }
+
+      console.log(`✅ Registered slash command: /${command.data.name}`);
+    } catch (error) {
+      console.error(`❌ Error registering slash command ${command.data.name}:`, error.message);
+    }
+  }
+
+  return { commands, totalSubcommands };
 }
