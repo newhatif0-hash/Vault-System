@@ -1,4 +1,4 @@
-﻿import 'dotenv/config';
+import 'dotenv/config';
 import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import express from 'express';
@@ -11,7 +11,7 @@ import { getServerCounters, saveServerCounters, updateCounter } from './services
 import { logger, startupLog, shutdownLog } from './utils/logger.js';
 import { checkBirthdays } from './services/birthdayService.js';
 import { checkGiveaways } from './services/giveawayService.js';
-import { loadCommands, registerCommands as registerSlashCommands } from './handlers/loaders/commandLoader.js';
+import { loadCommands, registerCommands } from './handlers/loaders/commandLoader.js';
 import { runSafeTask, handleTaskError, ErrorCodes } from './utils/errorHandler.js';
 import { initializeMusic } from './services/music/riffySetup.js';
 import { shutdownMusic } from './services/music/playerHandler.js';
@@ -91,7 +91,7 @@ class TitanBot extends Client {
       startupLog('Discord login successful');
       
       startupLog('Registering slash commands globally...');
-      await this.registerCommands();
+      await this.registerSlashCommands();
       startupLog('Slash commands registration complete');
       
       const databaseMode = dbStatus.isDegraded
@@ -279,7 +279,6 @@ class TitanBot extends Client {
         }
         
         // Save cleaned counters if any were orphaned
-        // Save cleaned counters if any were orphaned
         if (orphanedCounters.length > 0) {
           await saveServerCounters(this, guildId, validCounters);
           logger.info(`Cleaned up ${orphanedCounters.length} orphaned counter(s) from guild ${guildId} during scheduled update`);
@@ -322,11 +321,20 @@ class TitanBot extends Client {
     }
   }
 
-  async registerCommands() {
+  async registerSlashCommands() {
     try {
-      await registerSlashCommands(this, { clientId: this.config.bot.clientId });
+      const { commands, totalSubcommands } = registerCommands(this);
+      
+      const rest = new REST({ version: '10' }).setToken(this.config.bot.token);
+      
+      await rest.put(
+        `/applications/${this.config.bot.clientId}/commands`,
+        { body: commands }
+      );
+      
+      logger.info(`✅ Successfully registered ${commands.length} command(s) globally (${totalSubcommands} subcommands)`);
     } catch (error) {
-      logger.error('Error registering commands:', error);
+      logger.error('Error registering slash commands:', error);
     }
   }
 
@@ -337,7 +345,6 @@ class TitanBot extends Client {
     logger.info(`${'='.repeat(60)}`);
 
     try {
-      
       logger.info('Stopping cron jobs...');
       cron.getTasks().forEach(task => task.stop());
       logger.info('✅ Cron jobs stopped');
@@ -352,7 +359,6 @@ class TitanBot extends Client {
         logger.info('✅ Web server closed');
       }
 
-      // Close database connection
       // Close database connection
       if (this.db && this.db.db) {
         logger.info('Closing database connection...');
@@ -372,13 +378,12 @@ class TitanBot extends Client {
           this.destroy();
           logger.info('✅ Discord client destroyed');
         } catch (error) {
-
           logger.warn('Discord client destroy warning (non-critical):', error.message);
         }
       }
 
       logger.info('✅ Graceful shutdown complete');
-  shutdownLog('Bot stopped successfully.');
+      shutdownLog('Bot stopped successfully.');
       process.exit(0);
     } catch (error) {
       logger.error('Error during graceful shutdown:', error);
@@ -429,3 +434,4 @@ try {
 }
 
 export default TitanBot;
+        
