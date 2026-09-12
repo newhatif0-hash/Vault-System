@@ -18,13 +18,14 @@ export default {
             option.setName("reason").setDescription("Reason for the ban"),
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+    
     category: "moderation",
-    shortcuts: ["كسرة", "بنعالي"],
-    allowedRoles: ["1548206311244562505", "1548206279229448213"],
+    shortcuts: ["كسرة", "بنعالي"], // ← ADD THIS LINE
+    allowedRoles: ["1548206311244562505", "1548206279229448213"], // ← ADD THIS LINE
 
     async execute(interaction, config, client) {
         // Check if user has one of the allowed roles
-        const hasPermission = this.allowedRoles.some(roleId => 
+        const hasPermission = this.allowedRoles.some(roleId =>
             interaction.member.roles.cache.has(roleId)
         );
 
@@ -55,6 +56,7 @@ export default {
                 'You cannot ban yourself.',
             );
         }
+
         if (user.id === client.user.id) {
             throw new TitanBotError(
                 'Cannot ban bot',
