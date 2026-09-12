@@ -1,47 +1,69 @@
-import fs from 'fs';
+import { readdirSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { logger } from '../../utils/logger.js';
+import commandAliases from '../../config/commands/commandAliases.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Load all commands from the commands directory and register them with aliases
+ * @param {Client} client - Discord.js client
+ */
 export async function loadCommands(client) {
-    const commandsPath = path.join(__dirname, '../../commands');
+  const commandsPath = path.join(__dirname, '../../commands');
 
-    async function loadCommandsRecursive(dir) {
-        const files = fs.readdirSync(dir);
+  try {
+    const categories = readdirSync(commandsPath);
 
-        for (const file of files) {
-            const filePath = path.join(dir, file);
-            const stat = fs.statSync(filePath);
+    for (const category of categories) {
+      const categoryPath = path.join(commandsPath, category);
+      const files = readdirSync(categoryPath).filter(f => f.endsWith('.js'));
 
-            if (stat.isDirectory()) {
-                await loadCommandsRecursive(filePath);
-            } else if (file.endsWith('.js')) {
-                try {
-                    const command = (await import(`file://${filePath}`)).default;
+      for (const file of files) {
+        try {
+          const filePath = path.join(categoryPath, file);
+          const fileURL = `file://${filePath}`;
+          const commandModule = await import(fileURL);
+          const command = commandModule.default || commandModule;
 
-                    if (command.data?.name) {
-                        // Register main command
-                        client.commands.set(command.data.name, command);
-                        logger.info(`✓ Loaded command: ${command.data.name}`);
+          // Validate command structure
+          if (!command.data || !command.data.name) {
+            console.warn(`⚠️  Skipping ${file}: Missing data.name`);
+            continue;
+          }
 
-                        // Register aliases/shortcuts
-                        if (command.aliases && Array.isArray(command.aliases)) {
-                            for (const alias of command.aliases) {
-                                client.commands.set(alias, command);
-                                logger.info(`✓ Registered alias: ${alias} → ${command.data.name}`);
-                            }
-                        }
-                    }
-                } catch (error) {
-                    logger.error(`Failed to load command from ${filePath}:`, error);
-                }
+          const commandName = command.data.name;
+
+          // Register main command
+          client.commands.set(commandName, command);
+          console.log(`✅ Loaded command: ${commandName}`);
+
+          // Register aliases
+          const aliases = commandAliases[commandName] || [];
+          if (Array.isArray(aliases)) {
+            for (const alias of aliases) {
+              client.commands.set(alias, command);
+              console.log(`   └─ Alias: ${alias}`);
             }
+          }
+        } catch (error) {
+          console.error(`❌ Error loading command ${file}:`, error.message);
         }
+      }
     }
 
-    await loadCommandsRecursive(commandsPath);
-    logger.info(`✓ Loaded ${client.commands.size} commands and aliases total`);
+    console.log(`\n📊 Total commands + aliases registered: ${client.commands.size}`);
+  } catch (error) {
+    console.error('❌ Error loading commands directory:', error);
+  }
+}
+
+/**
+ * Register all commands (wrapper function for clarity)
+ * @param {Client} client - Discord.js client
+ */
+export async function registerCommands(client) {
+  console.log('🔄 Starting command registration...');
+  await loadCommands(client);
+  console.log('✅ Command registration complete!');
 }
