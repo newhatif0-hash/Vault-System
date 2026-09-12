@@ -22,16 +22,16 @@ export async function loadCommands(client) {
                 try {
                     const command = (await import(`file://${filePath}`)).default;
 
-                    if (command.name) {
+                    if (command.data?.name) {
                         // Register main command
-                        client.commands.set(command.name, command);
-                        logger.info(`✓ Loaded command: ${command.name}`);
+                        client.commands.set(command.data.name, command);
+                        logger.info(`✓ Loaded command: ${command.data.name}`);
 
-                        // Register shortcuts if they exist
-                        if (command.shortcuts && Array.isArray(command.shortcuts)) {
-                            for (const shortcut of command.shortcuts) {
-                                client.commands.set(shortcut, command);
-                                logger.info(`✓ Registered shortcut: ${shortcut} → ${command.name}`);
+                        // Register aliases/shortcuts
+                        if (command.aliases && Array.isArray(command.aliases)) {
+                            for (const alias of command.aliases) {
+                                client.commands.set(alias, command);
+                                logger.info(`✓ Registered alias: ${alias} → ${command.data.name}`);
                             }
                         }
                     }
@@ -43,5 +43,5 @@ export async function loadCommands(client) {
     }
 
     await loadCommandsRecursive(commandsPath);
-    logger.info(`✓ Loaded ${client.commands.size} commands and shortcuts total`);
+    logger.info(`✓ Loaded ${client.commands.size} commands and aliases total`);
 }
