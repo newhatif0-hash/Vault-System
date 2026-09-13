@@ -1,3 +1,8 @@
+console.log('🔍 App.js starting...');
+
+import 'dotenv/config';
+import { Client, Collection, GatewayIntentBits } from 'discord.js';
+// ... rest of imports
 import 'dotenv/config';
 import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
