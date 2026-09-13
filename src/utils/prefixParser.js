@@ -1,6 +1,6 @@
 // prefixParser.js
 
-import { resolveSubcommandAlias } from '../config/commands/commandAliases.js';
+import { resolveCommandAlias } from '../config/commands/commandAliases.js';
 import { logger } from './logger.js';
 
 export function parsePrefixCommand(content, prefix) {
@@ -113,7 +113,7 @@ export function mapArgumentsToOptions(args, commandData) {
       subcommandGroupName = args[0].toLowerCase();
       const group = subcommandGroup.options?.find((g) => g.name === subcommandGroupName);
       if (group && args.length > 1) {
-        subcommandName = resolveSubcommandAlias(args[1]);
+        subcommandName = resolveCommandAlias(args[1]);
         const sub = group.options?.find((s) => s.name === subcommandName);
         if (sub) {
           optionDefs = sub.options?.filter((opt) => opt.type !== 1 && opt.type !== 2) || [];
@@ -127,7 +127,7 @@ export function mapArgumentsToOptions(args, commandData) {
     }
   } else if (hasSubcommands) {
     if (args.length > 0) {
-      const resolvedSubcommand = resolveSubcommandAlias(args[0]);
+      const resolvedSubcommand = resolveCommandAlias(args[0]);
       logger.debug(
         `Looking for subcommand: ${resolvedSubcommand}, available: ${subcommands.map((s) => s.name).join(', ')}`,
       );
