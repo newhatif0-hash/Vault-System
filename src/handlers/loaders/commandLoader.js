@@ -1,9 +1,23 @@
 import { readdirSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import commandAliases from '../../config/commands/commandAliases.js';
+import commandAliasesMap from '../../config/commands/commandAliases.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Create reverse mapping: English command → Arabic aliases
+function buildAliasesMap(aliasesObj) {
+  const reverseMap = {};
+  for (const [arabic, english] of Object.entries(aliasesObj)) {
+    if (!reverseMap[english]) {
+      reverseMap[english] = [];
+    }
+    reverseMap[english].push(arabic);
+  }
+  return reverseMap;
+}
+
+const arabicAliases = buildAliasesMap(commandAliasesMap);
 
 /**
  * Load all commands from the commands directory and register them with aliases
@@ -38,9 +52,9 @@ export async function loadCommands(client) {
           client.commands.set(commandName, command);
           console.log(`✅ Loaded command: ${commandName}`);
 
-          // Register aliases for prefix commands
-          const aliases = commandAliases[commandName] || [];
-          if (Array.isArray(aliases)) {
+          // Register Arabic aliases for prefix commands
+          const aliases = arabicAliases[commandName] || [];
+          if (Array.isArray(aliases) && aliases.length > 0) {
             for (const alias of aliases) {
               client.commands.set(alias, command);
               console.log(`   └─ Alias: ${alias}`);
@@ -66,14 +80,15 @@ export async function loadCommands(client) {
  */
 export function registerCommands(client) {
   const commands = [];
+  const registeredNames = new Set(); // Track which commands we've already registered
   let totalSubcommands = 0;
 
-  for (const [, command] of client.commands) {
-    // Only include each command once (skip aliases)
-    if (!command.data || !command.data.name) continue;
-    
-    // Check if this is the main command (not an alias)
-    if (client.commands.get(command.data.name) !== command) continue;
+  for (const [name, command] of client.commands) {
+    // Skip if we've already registered this command
+    if (registeredNames.has(command.data?.name)) continue;
+
+    // Only register if it's the actual command name (not an alias)
+    if (name !== command.data?.name) continue;
 
     // Only register slash commands if supportSlash is true
     if (command.supportSlash === false) {
@@ -85,6 +100,7 @@ export function registerCommands(client) {
       // Build the slash command JSON
       const commandJson = command.data.toJSON ? command.data.toJSON() : command.data;
       commands.push(commandJson);
+      registeredNames.add(command.data.name);
 
       // Count subcommands if they exist
       if (command.data.options) {
