@@ -8,8 +8,6 @@ import cron from 'node-cron';
 
 import config from './config/application.js';
 // ... rest of the file remains the same
-import 'dotenv/config';
-import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import express from 'express';
 import cron from 'node-cron';
