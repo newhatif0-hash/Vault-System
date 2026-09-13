@@ -7,12 +7,6 @@ import express from 'express';
 import cron from 'node-cron';
 
 import config from './config/application.js';
-// ... rest of the file remains the same
-import { REST } from '@discordjs/rest';
-import express from 'express';
-import cron from 'node-cron';
-
-import config from './config/application.js';
 import { initializeDatabase } from './utils/database.js';
 import { getGuildConfig } from './services/config/guildConfig.js';
 import { getServerCounters, saveServerCounters, updateCounter } from './services/serverstatsService.js';
@@ -30,18 +24,14 @@ class TitanBot extends Client {
   constructor() {
     super({
       intents: [
-        
-        GatewayIntentBits.Guilds,                        
-        GatewayIntentBits.GuildMembers,                 
-
-        GatewayIntentBits.GuildMessages,                
-        GatewayIntentBits.GuildMessageReactions,        
-        GatewayIntentBits.MessageContent,               
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.MessageContent,
         GatewayIntentBits.DirectMessages,
-
-        GatewayIntentBits.GuildVoiceStates,             
-
-        GatewayIntentBits.GuildBans,                    
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildBans,
       ],
     });
 
@@ -442,4 +432,4 @@ try {
 }
 
 export default TitanBot;
-        
+
